@@ -1,19 +1,22 @@
 const express = require('express');
 const connectDB = require('./connect.js');
 const app = express();
-
+const ejs = require('ejs');
+const path = require('path');
 const port = 3000;
 const urlRouter = require('./routes/url2.js');
-const Url = require('./models/url.js');
-
+const shortRouter = require('./routes/short.js');
 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 
-connectDB('PASTE YPOUR MONGODB CONNECTION STRING HERE')
+
+connectDB('mongodb+srv://yashjangirr:0uywPi2VpLIe6WNQ@cluster0.aqezj7f.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/ShortUrl')
 .then(()=> {
     console.log('Connected to MongoDB');
 })
@@ -21,25 +24,13 @@ connectDB('PASTE YPOUR MONGODB CONNECTION STRING HERE')
     console.error('Error connecting to MongoDB:', err);
 });
 
-app.use('/url', urlRouter); 
 
-app.get('/:shortId', async (req, res) => {
-    const shortId = req.params.shortId;
-
-    if(!shortId) {
-        return res.status(400).json({ error: 'Short ID is required' });
-    }
-
-    const entry = await Url.findOneAndUpdate(
-        { shortId },
-        { $push: { visitHistory: { timestamp: Date.now() } } },
-    )
-    if (!entry) {
-        return res.status(404).json({ error: 'Short URL not found' });
-    }
-    return res.redirect(entry.redirectUrl);
+app.get('/', (req, res) => {
+    res.render('index', { title: 'URL Shortener' });
 })
 
+app.use('/url', urlRouter); 
+app.use('/', shortRouter);
 
 
 app.listen(port, () =>{
