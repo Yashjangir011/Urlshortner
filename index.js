@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 
 
 
-connectDB('mongodb+srv://yashjangirr:0uywPi2VpLIe6WNQ@cluster0.aqezj7f.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/ShortUrl')
+connectDB('P lease enter your MongoDB connection string here')
 .then(()=> {
     console.log('Connected to MongoDB');
 })
